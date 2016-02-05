@@ -1,61 +1,60 @@
-
-// =========================== INTRODUCCION SUPERCOLLIDER
-// Basado en material de Bruno Ruviaro, Nicolas Varchausky, Joshua Parmenter y Matias Zabaljauregui
+// =========================== INTRODUCCIÓN SUPERCOLLIDER
 
 /*
-SuperCollider 3 es un lenguaje interpretado de alto nivel basado en Smalltalk, implementado en C/C++. Tiene influencias de Java y otros lenguajes orientados a objetos y funcionales.
+SuperCollider 3 es un lenguaje interpretado de alto nivel basado en Smalltalk, implementado en C/C++.
+Tiene influencias de Java y otros lenguajes, orientados a objetos y funcionales.
 
-Esta construido en base a un modelo cliente/servidor. Los usuarios escriben "programas cliente" a traves de los cuales le envian instrucciones al servidor. Esta estructura de cliente y servidor permite que las comunicaciones no sean necesariamente locales, es decir, que no tengan que ocurrir exclusivamente en una misma maquina. Mientras cliente y servidor esten comunicados a traves de una red, la distribucion de mensajes puede realizarse de manera remota entre una o mas computadoras. Incluso la maquina cliente y la maquina servidor puede estar distintos lugares del mundo.
+Esta construido en base a un modelo cliente/servidor. Los usuarios escriben "programas cliente" a traves de los cuales le envian instrucciones al servidor. Esta estructura permite que las comunicaciones no sean necesariamente locales, es decir, que no tengan que ocurrir exclusivamente en una misma máquina. Mientras cliente y servidor estén comunicados a través de una red, la distribución de mensajes puede realizarse de manera remota entre una o más computadoras. Incluso la máquina cliente y la máquina servidor pueden estar en distintos lugares del mundo. O en la misma máquina.
 
 SC 3 es entonces la combinacion de 2 programas principales:
 
-1. scsynth
-Es el motor de sintesis (server); el que genera sonido.
+1. scsynth (SC-synthesizer)
+Es el motor de síntesis (server), el que genera sonido.
 
-2. sclang
-Es el lenguaje (cliente) que utilizamos para comunicarnos con el server. Realiza dos tareas: interpreta el lenguaje de programacion SuperCollider y se comunica con el server via OSC (Open Sound Control). A traves del cliente enviamos instrucciones al server para que produzca sonido con las caracterisitcas que definimos desde el lenguaje.
+2. sclang (SC-language)
+Es el lenguaje (cliente) que utilizamos para comunicarnos con el server.
+Realiza dos tareas: interpreta el lenguaje de programación SuperCollider y se comunica con el server via OSC (Open Sound Control).
+A través del cliente enviamos instrucciones al server para que produzca sonido con las características que definimos desde el lenguaje.
 
-Se pueden usar otros programas cliente, como PureData, Max/Msp, Python, Processing, Java, Open Frameworks. Basicamente, podemos usar cualquier programa que pueda enviar mensajes OSC. Sin embargo, sclang, el lenguaje desarrollado por James McCartney es por lejos el mas poderoso para controlar el motor de sintesis.
+Se pueden usar otros programas cliente, como PureData, Max/Msp, Python, Processing, Java, Open Frameworks. Básicamente, podemos usar cualquier programa que pueda enviar mensajes OSC. Sin embargo, sclang, el lenguaje desarrollado por James McCartney es por lejos el más poderoso para controlar el motor de síntesis.
 */
 
-// para una descripcion mas detallada (y con graficos) de la estructura de cliente/servidor:
-ClientVsServer // seleccione y presione cmd-d para acceder al grafico
+// para una descripcion más detallada (y con gráficos) de la estructura de cliente/servidor:
+ClientVsServer // seleccione y presione [ctl+d](windows)/[cmd+d](mac) para acceder al gráfico.
 
-
-// =========================== PROGRAMACION ORIENTADA A OBJETOS (OOP)
+// =========================== PROGRAMACIÓN ORIENTADA A OBJETOS
 
 /*
-La Programacion Orientada a Objetos hace hincapie en el manejo de estructuras de datos, y en una interfaz para acceder, setear y cambiar los datos que esas estructuras contienen.
+SuperCollider es un lenguaje de programacion orientado a objetos.
 
-SuperCollider es un lenguaje de programacion orientado a objetos. Piense en un objeto como en una herramienta con caracteristicas determinadas que puede realizar una serie de tareas especificas. En SuperCollider TODO es un objeto. Se pueden crear multiples instancias de un objeto que pueden estar activas simultaneamente. Un objeto contiene datos sobre su estado, a los que llamamos variables (que uno puede obtener y/o setear). Las operaciones que realizamos sobre esos datos las llamamos metodos. */
+En SuperCollider todo es un objeto. Se pueden crear múltiples instancias de un objeto que pueden estar activas simultáneamente. Un objeto contiene datos sobre su estado, a los que llamamos variables. Las operaciones que realizamos sobre esos datos las llamamos métodos.
+*/
 
-// =========================== INTRO A SCLANG: EL LENGUAJE DE SUPERCOLLIDER (CLIENTE)
+// =========================== INTRO A SCLANG
 /*
-Utilizando el lenguaje de Supercollider crearemos las definiciones de sintesis (SynthDef), a traves de las cuales definiremos como generar un sonido particular.
+Utilizando el lenguaje de Supercollider crearemos las definiciones de síntesis (SynthDef), a través de las cuales definiremos cómo generar un sonido particular.
 
-Tambien usamos el cliente para programar en que momento un sonido particular sera ejecutado. El servidor recibira estas instrucciones y sintetizara el audio.
+También usamos el cliente para programar en qué momento un sonido será ejecutado. El servidor recibirá estas instrucciones y sintetizará el audio.
 */
 
-// =========================== BASICOS DEL LENGUAJE
+// =========================== BÁSICOS DEL LENGUAJE
 
-/* El lenguaje utiliza un editor de texto para escribir las instrucciones que enviara al server. Estas instrucciones, nuestro codigo, se guarda como un archivo de texto. Podemos tambien guardarlo como html, plain text (scd) y como archivo de clase (sc - utilizado para crear una Clase). El editor contiene las funciones basicas de cualquier procesador de textos (copiar, pegar, buscar, reemplazar, etc); mas algunas funciones especificas que nos ayudaran a programar con mayor facilidad.
+/*
+El lenguaje utiliza un editor de texto para escribir las instrucciones que enviará al server. Estas instrucciones, nuestro código, se guarda como un archivo de texto. Podemos también guardarlo como html, plain text (scd) y como archivo de clase (sc - utilizado para crear una Clase). El editor contiene las funciones básicas (copiar, pegar, buscar, reemplazar, etc), más algunas funciones específicas que nos ayudarán a programar con mayor facilidad.
 
-Al arrancar SC, aparecera la Post Window, una ventana en la que SC posteara informacion diversa, como los mensajes de error, resultados de nuestro codigo, lo que retorne una funcion, etc. Lo primero que vemos es el resultado de la inicializacion del programa y de la compilacion de sus librerias.
-
-*CONSEJO* A medida que nuestros codigos se vuelvan cada vez mas complejos y extensos, puede resultar util incluir mensajes de posteo que luego haran mas sencillo el debugging.
+Al arrancar SC, aparecerá la Post Window, una ventana en la que SC posteará información diversa, como los mensajes de error, resultados de nuestro código, lo que retorne una función, etc. Lo primero que vemos es el resultado de la inicialización del programa y de la compilación de sus librerias.
 */
 
-// Que es el IDE de SuperCollider? (Integrated Development Environment)
+// Qué es el IDE de SuperCollider? (Integrated Development Environment)
 // Veamos la ayuda
 SuperCollider IDE
-
 
 //1.Hello World
 "Hello World".postln;
 
 //Tu primer onda sinusoidal: el Hello World de SC
-
-//alto volumen!
+//(alto volumen!)
+//(bootear el server primero)
 {SinOsc.ar}.play
 
 //mas interesante
@@ -63,25 +62,24 @@ SuperCollider IDE
 
 //consejo: tipear los ejemplos, no copiar y pegar, es una buena forma de ganar confianza en el lenguaje
 
-
 // ================= SISTEMA DE AYUDA
 /*
 Para acceder al menu de ayuda principal use el menu de ayuda en la solapa de SC.
 
-Tambien puede seleccionar el nombre de una clase y presionar command-d para acceder el archivo de ayuda de esa clase (si Esta disponible):
+Tambien puede seleccionar el nombre de una clase y presionar command+d o control+d para acceder el archivo de ayuda de esa clase (si está disponible):
 */
 
-SinOsc;
+SinOsc
 
 // ================= COMENTARIOS
 
 // la doble barra comenta una linea.
 
-/* asi se comenta un bloque de codigo,
+/* así se comenta un bloque de codigo,
 ubicandolo entre barras y estrellas - rojo */
 
 
-//Se pueden evaluar lineas incluso si el cursor esta sobre los comentarios
+//Se pueden evaluar líneas de código incluso si el cursor esta sobre los comentarios
 
 /* con [ctrl+/]  , se activa y desactiva esa linea como comentario */
 
@@ -94,21 +92,21 @@ Classes // azul
 "Strings" // gris
 thisProcess // palabras clave reservadas tambien en azul - aunque no son comunes.
 10.0 // numeros en magenta
-SinOsc.new // metodos en negro
-// comentarios en rojo!!!!
+SinOsc.new // métodos en negro
+// comentarios en rojo
 
 // ================= SHORTCUTS BASICOS
 
 {SinOsc.ar(440, 0, 0.25)}.play;
 
-// para evaluar una linea o un bloque de codigo
-cmd Return // no confundir con 'return' - MacOSX
+// para evaluar una línea o un bloque de código
+cmd Return // MacOSX
 ctrl Return	// Windows
 ctrl E	// Linux-gedit
 
-// para detener la ejecucion, o panic button
-cmd-punto	//  MacOSX
-ctrl-punto	// Windows
+// para detener la ejecución, o panic button
+cmd+punto	//  MacOSX
+ctrl+punto	// Windows
 esc 		// Linux-gedit
 
 // para acceder a los archivos de ayuda, seleccionar y presionar
@@ -117,50 +115,48 @@ ctrl+d // Windows
 ctrl+u // Linux-gedit
 
 // para borrar Post Window (la ventana de mensajes)
-cmd-shift-p // MacOSX/Windows
+cmd+shift+p // MacOSX/Windows
 
 
-// para pegar nuestro codigo manteniendo la font y el tamano del destino: shift-alt-cmd+v
+// ================= EVALUACIÓN
 
-// para comentar y descomentar, seleccionar y presionar cmd-/
-
-
-// ================= EVALUACION
-/*Las lineas de codigo terminan en punto y coma.
-
-El punto ('.') es el operador de mensajes. Envia el mensaje ubicado a su derecha al objeto ubicado a su izquierda.
+/*Las líneas de codigo terminan en punto y coma.
+El punto ('.') es el operador de mensajes.
+Envía el mensaje ubicado a su derecha al objeto ubicado a su izquierda.
 */
 
 "Soy una linea de codigo".postln;
 
-// ================= PARENTESIS
+// ================= PARÉNTESIS
 
-//Los parentesis encierran un bloque de codigo.
-//Ubique el cursor en la parte externa de uno de ellos o haga doble-click sobre uno de ellos para seleccionar todo el codigo entre los parentesis y evalue todo el bloque presionando cmd-return.
-
+//Los paréntesis encierran un bloque de código.
+//Ubique el cursor en la parte externa de uno de ellos o haga doble-click sobre uno de ellos para seleccionar todo el código entre los paréntesis, y luego evalúe.
 
 (    //comienza bloque
+
 "Estoy dentro de un bloque".postln;
 10 + 30
+
 )   //termina bloque
 
-// Siempre se retorna lo ultimo evaluado en ese bloque de codigo. Aparecera posteado en el interprete.
+// Siempre se retorna lo último evaluado en ese bloque de código. Aparecerá posteado en el intérprete.
 
-// Una linea de codigo que no termine en punto y coma dara un error
+// Una línea de código que no termine en punto y coma dará un error
 (
 "Estoy dentro de un bloque".postln
 10 + 20;
 )
 
 // ================= VARIABLES
+
 /* Las variables son espacios de memoria temporaria.
-Cualquier letra sola en minuscula es una variable GLOBAL. Puede pensar en ellas como variables accesibles desde cualquier parte del codigo. Son utiles para ejemplos breves.
+Cualquier letra sola en minúscula es una variable GLOBAL. Puede pensar en ellas como variables accesibles desde cualquier parte del código. Son útiles para ejemplos breves.
 
-***CUIDADO***, la letra 's' es especial, ya que designa por default al Server.
+*CUIDADO*, la letra 's' es especial, ya que designa por default al Server.
 
-Un bloque de codigo tambien ayuda a definir el alcance de las variables. Las variables se declaran al inicio del bloque de codigo y por convencion variables deben comenzar con minuscula. Podemos nombrar a las variables con cualquier nombre que se nos ocurra. Es de buena praxis nombrarlas de manera descriptiva de la clase de valor o dato que contendra.
+Un bloque de código tambien ayuda a definir el alcance de las variables. Las variables se declaran al inicio del bloque y, por convención, las variables deben comenzar con minúscula. Podemos nombrar a las variables con cualquier nombre que se nos ocurra. Es de buena práxis nombrarlas de manera descriptiva de la clase de valor o dato que contendrá.
 
-Por convencion, nombramos las variables con mas de una palabra de esta manera:
+Por convencion, nombramos las variables con más de una palabra de esta manera:
 variableConMuchasPalabras
 variable_con_muchas_palabras
 */
@@ -172,47 +168,59 @@ cifra = 30;
 cifra.postln;
 )
 
-cifra; // esta variable esta FUERA del alcance del bloque de codigo por lo tanto tira un error.
+cifra; // esta variable esta FUERA del alcance del bloque de codigo
 
 // ================= FUNCIONES
-// Las Funciones aparecen entre { } Pueden tener argumentos y variables. A traves de los argumentos, enviamos data desde afuera al interior de la Funcion.
+
+// Las Funciones aparecen entre {llaves}. Pueden tener argumentos y variables. A través de los argumentos, enviamos data desde afuera al interior de la funcion.
+
+//Las funciones son objetos
+a = {3 + 4};
+a;
+a.value;
 
 (
 var cuenta, resultado;
+
 // con 'arg' definimos nuestros argumentos
-cuenta = {arg val1=2, val2=1, val3;
+cuenta = {arg val1 = 2, val2 = 1, val3;
 	var val;
 	val = (val1 * val2) + val3;
 };
 
-// El mensaje "value" le indica a una Funcion que ejecute su metodo de evaluacion.
+// El mensaje "value" le indica a una Funcion que ejecute su metodo de evaluación.
 resultado = cuenta.value(2, 3, 4); // el orden de los valores se corresponde con el de los argumentos
-resultado.postln;
+
+//resultado.postln;
 ("El primer resultado da: " ++ resultado).postln;
 
 resultado = cuenta.value(3, 4, 5); // la variable resultado se sobreescribe y se le asigna un nuevo valor
+
 ("El segundo resultado da: " ++ resultado).postln;
+
 "SC siempre devuelve el ultimo objeto del bloque"
 )
 
-// NOTA: Hay mucho mas sobre Funciones
+// NOTA: Hay mucho más sobre funciones
 
-// ================= ORDEN DE EJECUCION - PRECEDENCIA
-//El codigo en SC es leido por el compilador de arriba-abajo, izquierda-derecha y de haber codigo anidado, del interior al exterior. Pero ignora los espacios.
+// ================= ORDEN DE EJECUCIÓN - PRECEDENCIA
 
-//Se ignora la precedencia matematica
+//El código en SC es leído por el compilador de arriba-abajo, izquierda-derecha y, de haber código anidado, del interior al exterior. Pero ignora los espacios.
+
 //Cuando combinamos mensajes y operaciones binarias, los mensajes tienen precedencia. Ej:
 
 // 5 + 2.squared ,   primero se evalua 2.squared
 
-// Usamos parentesis para forzar la precedencia:
+//Se ignora la precedencia matemática
+// Usamos paréntesis para forzar la precedencia:
 (
 var resultado;
+
 resultado = 3 + 10 * 2;
 "resultado es: ".post;
 resultado.postln;
 
-// queremos que la multiplicacion se evalue antes que la suma
+// Queremos que la multiplicación se evalúe antes que la suma
 resultado = 3 + (10 * 2);
 "resultado ahora es: ".post;
 resultado.postln;
@@ -220,18 +228,18 @@ resultado.postln;
 
 // =========================== Funciones con UGens
 
-//La posicion del mouse nos da el valor de frecuencia
+//La posición del mouse nos da el valor de frecuencia
 {Pan2.ar(SinOsc.ar(MouseX.kr(440,880),0,0.1),0.0)}.play
 
-// Una funcion mas compleja
+// Una función más compleja
 (
 {
 var n = 11; 	//probemos cambiar este valor por otros...
 Resonz.ar(
 	Mix.fill(n,{
-		var freq=rrand(50,560.3);
-		var numcps= rrand(2,20);
-		Pan2.ar(Gendy1.ar(6.rand,6.rand,1.0.rand,1.0.rand,freq ,freq, 1.0.rand, 1.0.rand, numcps, SinOsc.kr(exprand(0.02,0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)
+		var freq = rrand(50, 560.3);
+		var numcps = rrand(2, 20);
+		Pan2.ar(Gendy1.ar(6.rand, 6.rand, 1.0.rand, 1.0.rand, freq, freq, 1.0.rand, 1.0.rand, numcps, SinOsc.kr(exprand(0.02,0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)
 		}),
 	MouseX.kr(100,2000),
 	MouseY.kr(0.01,1.0)
@@ -239,14 +247,12 @@ Resonz.ar(
 }.play
 )
 
-// =========================== MAS SOBRE EL LENGUAJE
+// =========================== MÁS SOBRE EL LENGUAJE
 
-Shortcuts
-Syntax-Shortcuts // para no tipear tanto
-SymbolicNotations // Un catalogo de notacion simbolica (usando simbolos en lugar de mensajes)
-Literals // values with a direct representation (ex: a 2 is a 2 is a 2)
-
-
+Shortcuts //(keyboard shortcuts)
+Syntax-Shortcuts // equivalencias sintácticas en el compilador
+SymbolicNotations // Un catálogo de notación simbólica (usando símbolos en lugar de mensajes)
+Literals // valores con una representación sintáctica directa
 
 //Documentacion basada en el tutorial de Bruno Ruviaro llamado
 //"A Gentle Introduction to SuperCollider", 2014
@@ -288,9 +294,7 @@ s.boot
 Server.default = s = Server.local
 s.boot
 
-
-
-//5.Cambiando parametros
+//5.Cambiando parámetros
 // Un ejemplo. No trate de entendor todo. Simplemente disfrute del sonido y juegue con los numeros
 
 {RLPF.ar(Dust.ar([12, 15]), LFNoise1.ar([0.3, 0.2]).range(100, 3000), 0.02)}.play;
@@ -300,8 +304,6 @@ s.boot
 // Resonant Low Pass Filter // Dust = pulsos aleatorios // Ruido LF, interpola lineal
 
 // los archivos SC tienen extension .scd por supercollider document. Hay otros con extension .sc que veremos despues (contienen definiciones de clases, SynthDefs, y otros).
-
-
 
 //11. Grabar facilmente la salida de SC
 
@@ -360,8 +362,6 @@ var apples = 4, oranges = 3, lemons = 8, bananas = 10;
 ~galaApples; // todavia existe
 apples; // esta no
 
-
-
 //REASIGNACION DE VARIABLES
 // una practica que puede confundirlos es cuando la variables misma
 // se usa en la expresion de reasignacion
@@ -370,4 +370,3 @@ x = 10
 x = x + 1
 
 // en programacion el signo igual no es como la igualdad matematica donde x = x + 1 nunca puede ser verdad
-

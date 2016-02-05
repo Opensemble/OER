@@ -1,6 +1,12 @@
 //PARTE II
 //PATTERNS
 
+/*
+Por qué usar Patterns?
+
+Los pattens describen cálculos sin mostrar explícitamente cada paso realizado. Son una representación de alto nivel de una tarea computacional. Describen qué queremos hacer, en lugar de cómo lograrlo.
+Son ideales para tareas que necesitan producir secuencias o streams (flujos) de información. Frecuentemente estos streams son de números, pero los patterns pueden generar cualquier tipo de objetos */
+
 //13. La familia Pattern
 
 Pbind(\degree, Pseries(0, 1, 30), \dur, 0.05).play
@@ -11,16 +17,17 @@ Pbind(\degree, 0).play;
 
 // Toca Do central una vez por segundo.
 // usando \degree:
-// C, D, E, F, G...  se representan con numeros: 0, 1, 2, 3, 4...
-// Se asume la escala de C mayor y se comienza desde 0.
-// Cambiar el numero y evaluar.
-// Se pueden elegir notas por debajo usando numeros negativos, por ej -2 nos da un La 3
+// C, D, E, F, G...  se representan con námeros: 0, 1, 2, 3, 4...
+// Se asume la escala de C mayor y se comienza desde 0 (do central).
 
-//Ahora cambiamos la duracion de las notas, usando el simbolo \dur
+// Cambiar el numero y evaluar.
+// Se pueden elegir notas por debajo usando números negativos, por ej -2 nos da un La 3
+
+//Ahora cambiamos la duración de las notas, usando el símbolo \dur
 
 Pbind(\degree, 0, \dur, 0.5).play
 
-//Pronto las cosas se pondran divertidas...
+//(Pronto las cosas se pondrán divertidas)
 
 //13.2 Pseq
 
@@ -28,19 +35,22 @@ Pbind(\degree, Pseq([0, 1, 2, 3, 4, 5, 6, 7], 1), \dur, 0.2).play
 
 //Pseq representa una secuencia. Recibe una lista y una cantidad de repeticiones.
 
-//En lugar de proveer un unico numero fijo para el grado de la escala (como en el primer ejemplo), estamos usando un Pseq, una receta para una secuencia de numeros. Podemos extenderlo a duraciones:
+a = Pseq([0,2,3,4,5],2).asStream;
+a.next
+
+//En lugar de proveer un único numero fijo para el grado de la escala (como en el primer ejemplo), estamos usando un Pseq, una receta para una secuencia de números. Podemos extenderlo a duraciones:
 
 Pbind(\degree, Pseq([0, 1, 2, 3, 4, 5, 6, 7], 5), \dur, Pseq([0.2, 0.1, 0.1, 0.2, 0.2, 0.35], inf)).play;
 
-// Repetimos el Pseq con alturas 5 veces. Reemplazamos la duracion fija por otro Pseq que tiene 6 valores y una repeticion infinita.
+// Repetimos el Pseq con alturas 5 veces. Reemplazamos la duración fija por otro Pseq que tiene 6 valores y una repetición infinita.
 
-// Pbind detiene su ejecucion luego de que el Pseq mas corto haya terminado su trabajo
+// Pbind detiene su ejecución luego de que el Pseq más corto haya terminado su trabajo
 
-// Cuando proveemos secuencias de diferentes tamanos, Pbind las loopea como sea necesario.
+// Cuando proveemos secuencias de diferentes tamaños, Pbind las loopea como sea necesario.
 
-//13.3 Hacer el codigo mas legible es importante
-// Indentamos el Pbind. Incorporemos este habito.
-// Ahora tenemos que encerrarlo en un bloque de codigo porque ya no es una unica linea
+//13.3 Hacer el código mas legible es importante
+// Indentamos el Pbind. Incorporemos este hábito.
+// Ahora tenemos que encerrarlo en un bloque de código porque ya no es una única línea
 
 (
 Pbind (
@@ -50,18 +60,18 @@ Pbind (
 )
 
 // Preguntas:
-//     . cambiar a 1 las repeticiones del segundo Pseq, que sucede?
-//     . como podemos hacer que este Pbind toque infinitamente?
+//     . cambiar a 1 las repeticiones del segundo Pseq, qué sucede?
+//     . cómo podemos hacer que este Pbind toque infinitamente?
 
 //13.4 Cuatro formas de especificar altura
 
 //figura : fig-piano-keyboard-degree-note-midinote-freq.png
 
-// * Si prefiere usar alturas cromaticas, puede usar \note
+// * Si prefiere usar alturas cromáticas, puede usar \note
 //    el 0 es el Do central, pero los pasos son semitonos
 
 // * Si prefiere usar numeracion de nota MIDI, usamos \midinote
-//    (60 = C central, 61 = #C, etc)
+//    (60 = C central, 61 = C#, etc)
 
 // * Si prefiere especificar frecuencias, directamente en Herz, use \freq
 
@@ -70,12 +80,20 @@ Pbind(\note, 9).play;
 Pbind(\midinote, 69).play;
 Pbind(\freq, 440).play;
 
-// Cuidado con los valores que usamos, segun la forma de especificar altura.
-// Valores max y min en figura: valores_de_altura.
+// Tener en cuenta los valores que usamos, según la forma de especificar altura.
+// Valores max y min en la figura: valores_de_altura.
 
-//13.5 Mas palabras claves: amplitud y legato
+// Estos son eventos
+().play;
+(degree: 7).play;
 
-// dos nuevos simbolos: \amp y \legato
+// Podemos mirar la clase Event
+Event
+
+// Pbind es un pattern que genera un "stream de events".
+
+//13.5 Más palabras claves: amplitud y legato
+// dos nuevos símbolos: \amp y \legato
 
 (
 Pbind(
@@ -94,8 +112,8 @@ Pbind(
 
 //Legato funciona mejor entre 0.1 y 1
 
-// Tomar este ultimo Pbind como punto de partida para experimentar.
-// Recordar que podemos usar valores fijos, no es necesario poner cosas como Pseq([0.2, 0.2, 0.2, ...], 100); ni siquiera Pseq([0.2], inf), simplemente 0.2
+// Tomar este último Pbind como punto de partida para experimentar.
+// Recordar que podemos usar valores fijos, no es necesario usar expresiones como Pseq([0.2, 0.2, 0.2, ...], 100); ni siquiera Pseq([0.2], inf), simplemente 0.2.
 
 //13.6 Prand
 //En lugar de tocar la lista en secuencia, Prand toma un item al azar de la lista, cada vez.
@@ -113,8 +131,8 @@ Pbind(
 
 
 //13.7 Pwhite
-// Un generador de numeros aleatorios con distribucion uniforme (white noise).
-// Por ejemplo: Pwhite(100, 500) nos da numeros aleatorios en ese rango
+// Un generador de números aleatorios con distribución uniforme (white noise).
+// Por ejemplo: Pwhite(100, 500) nos da números aleatorios en ese rango
 
 (
 Pbind(
@@ -130,14 +148,14 @@ Pbind(
 // Repasamos la diferencia entre Prand y Pwhite
 
 // Para generar floats con Pwhite: Pwhite(100, 500.0)
-// Por ejemplo las amplitudes van de 0 hasta 1.0
+// Por ejemplo las amplitudes van de 0.0 hasta 1.0
 
 //Ejemplos y preguntas
 // Escribimos una escala menor con \note
 // [0, 2, 3, 5, 7, 8, 11, 12]
 // C, D, Eb, F, G, Ab, B, C
 
-// Cuantos eventos toca cada ejemplo?
+// Cuántos eventos toca cada ejemplo?
 
 // Pseq
 (
@@ -187,7 +205,7 @@ Pbind(
 // Pxrand
 (
 p = Pbind(
-    \note, Prand([0, 2, 3, 5, 7, 8, 11, 12], inf),
+    \note, Pxrand([0, 2, 3, 5, 7, 8, 11, 12], inf),
 	\dur, 0.35;
 ).play;
 )
