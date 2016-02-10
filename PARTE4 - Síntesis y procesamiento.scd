@@ -4,17 +4,17 @@
 //24. Ugens
 
 // Una unidad generadora o UGen, es un objeto que genera señales de control o señales de audio. Éstas se calculan en el server. Hay muchas clases de ugens, todas derivadas de la clase UGen. SinOsc y LFNoise0 son dos ejemplos. Para más detalles, mirar los archivos de ayuda:
-Unit Generators and Synths
+"Unit Generators and Synths"
 //y
-Tour of UGens
+"Tour of UGens"
 
-// Cuando usamos Pbind el sonido default tipo piano era el resultado de combinar varias UGens. Pero Pbind no es una Unidad Generadora. Es una receta para eventos musicales (partitura). Tampoco el EventStreamPlayer es una UGen, es el ejecutante  (como un pianista). La UGen es el instrumento.
+// Cuando usamos Pbind el sonido default tipo piano era el resultado de combinar varias UGens. Pero Pbind no es una Unidad Generadora. Es una receta para eventos musicales (partitura). Tampoco el EventStreamPlayer es una UGen, es el ejecutante (como un pianista). La UGen es el instrumento.
 
-// Aprenderemos a combinar ugens para crear todo tipo de instrumentos electrónicos con sonidos sintetizados y procesados.
+// Aprenderemos a combinar ugens para crear todo tipo de instrumentos electrónicos con sonidos sintetizados y procesados. A los patches los llamamos redes de síntesis o grafos de flujo de señal.
 
 // 24.1 Control con el mouse: Theremin instantáneo
 
-{SinOsc.ar(freq: MouseX.kr(100, 2500), mul: MouseY.kr(0, 1))}.play
+{SinOsc.ar(freq: MouseX.kr(100, 2500), mul: MouseY.kr(0, 0.7))}.play
 
 //SinOsc, MouseX, MouseY son ugens. Las últimas dos capturan el movimiento del cursor en pantalla
 
@@ -30,9 +30,11 @@ Tour of UGens
 
 // Ahora reescriba el theremin reemplazando con otras formas de onda y escuche las diferencias sonoras. Finalmente pruebe el método .scope y será capaz de ver una representación en tiempo real: se abre una ventana "Stethoscope", como un osciloscopio.
 
-FreqScope.new; // analizador espectral
+//s = Server.default = Server.internal
+// s.scope
+//FreqScope.new; // analizador espectral
 
-{Saw.ar(freq: MouseX.kr(100, 2500), mul: MouseY.kr(0, 1))}.scope(1, zoom:4),
+{Saw.ar(freq: MouseX.kr(100, 2500), mul: MouseY.kr(0, 1))}.scope(1, zoom:4)
 
 //25. Tasa de Audio y tasa de Control.
 
@@ -41,8 +43,8 @@ FreqScope.new; // analizador espectral
 
 // Las ugens que funcionan a tasa de control se usan para señales de baja frecuencia o de cambio lento (como una envolvente lineal). Producen un único sample por ciclo de control y por lo tanto usan menos recursos.
 
-// Si la configuracion es de 44.1k, cuando enviamos el mensaje .ar a una UGen, le pedimos que genere 44100 numeros por segundo! (son muchos numeros).
-// Escribimos {SinOsc.ar}.play en sclang, el cual se comunica con scsynth quien genera esos samples
+// Si la configuracion es de 44.1k, cuando enviamos el mensaje .ar a una UGen, le pedimos que genere 44100 números por segundo.
+// Escribimos {SinOsc.ar}.play en sclang, el cual se comunica con scsynth quien genera esos samples.
 
 // Cuando usamos .kr en lugar de .ar, el trabajo en el server tiene algunas diferencias:
 // 1. el número de samples sera de 44100 / 64 = aprox 700. 64 es conocido como período de control.
@@ -50,8 +52,8 @@ FreqScope.new; // analizador espectral
 
 // Entonces las UGens son generadores de números, muy rápidos. Algunos de estos números son señales de audio otras son señales de control.
 
-// Pero qué números son estos? grandes, pequenos?  positivos, negativos?
-// Son números muy pequeñoos entre 0 y 1 ó -1 y 1. Dependiendo de la categoria de Ugen. Ugen Unipolar: genera números entre 0 y 1. Ugen Bipolar: genera números entre -1 y 1
+// Pero qué números son estos? grandes, pequenos? positivos, negativos?
+// Son números muy pequeños entre 0 y 1 ó -1 y 1. Dependiendo de la categoria de Ugen. Ugen Unipolar: genera números entre 0 y 1. Ugen Bipolar: genera números entre -1 y 1
 
 // 25.1 El método poll
 
@@ -72,7 +74,8 @@ FreqScope.new; // analizador espectral
 
 //26. Argumentos de UGen
 
-MouseX  // usemos ctrl D para ver la ayuda
+MouseX  // usemos ctrl+d para ver la ayuda
+
 // Luego de la sección de descripcion, vemos los métodos de clases donde se explica cuáles son los argumentos que espera el método kr para esta clase particular.
 
 // 27. Escalar rangos
@@ -234,7 +237,7 @@ a.free;
 
 // La eleccion del bus 55 fue arbitraria (entre 16 y 127). A medida que nuestros programas crecen en complejidad es poco conveniente mantener registro de los numeros de buses de forma manual.
 
-// Creamos y alocamos el bus. Métodos de clase.
+// Creamos y asignamos el bus. Métodos de clase.
 ~myBus = Bus.audio(s, 2);
 
 // El primer argumento de Bus.audio es s, que apunta al server. El segundo argumento indica la cantidad de buses que necesitamos alocar. Entonces referenciamos esos buses con un nombre apropiado, podría ser reverbBus o delayBus, etc.

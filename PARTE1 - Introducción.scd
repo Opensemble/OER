@@ -22,6 +22,43 @@ Se pueden usar otros programas cliente, como PureData, Max/Msp, Python, Processi
 // para una descripcion más detallada (y con gráficos) de la estructura de cliente/servidor:
 ClientVsServer // seleccione y presione [ctl+d](windows)/[cmd+d](mac) para acceder al gráfico.
 
+//Client vs Server
+
+// Se comunican usando OSC. Necesitamos saber la dir IP y el puerto
+// por ejemplo 127.0.0.1  y   57110
+
+// Toda la generacion de sonido sucede en el server y la mayoria del
+// control sucede en el lenguaje SC (sclang) u otros lenguajes o interfaces
+// que envian OSC al servidor. Otros clientes: Haskell, Python, Ruby, Processing, OF, etc
+
+// Tenemos dos posibilidades cuando usamos una sola compu:
+// localhost e internal
+// El server internal es parte del mismo espacio de memoria del lenguaje
+// El server localhost es un proceso separado corriendo en la misma maquina
+
+// la variable s referencia al server
+
+s.postln
+s.addr
+s.name
+s.serverRunning
+s.avgCPU
+
+// iniciar y detener
+s.boot
+s.quit
+
+//si queremos usar el internal, por defecto
+s = Server.internal
+Server.default = s
+s.boot
+
+//podemos crear nuestros propios servers para controlar por red
+
+//por ahora usemos el server local, que es el default
+Server.default = s = Server.local
+s.boot
+
 // =========================== PROGRAMACIÓN ORIENTADA A OBJETOS
 
 /*
@@ -247,70 +284,31 @@ Resonz.ar(
 }.play
 )
 
-// =========================== MÁS SOBRE EL LENGUAJE
+// MÁS SOBRE EL LENGUAJE:
 
 Shortcuts //(keyboard shortcuts)
 Syntax-Shortcuts // equivalencias sintácticas en el compilador
 SymbolicNotations // Un catálogo de notación simbólica (usando símbolos en lugar de mensajes)
 Literals // valores con una representación sintáctica directa
 
-//Documentacion basada en el tutorial de Bruno Ruviaro llamado
-//"A Gentle Introduction to SuperCollider", 2014
-
-//Client vs Server
-
-// Se comunican usando OSC. Necesitamos saber la dir IP y el puerto
-// por ejemplo 127.0.0.1  y   57110
-
-// Toda la generacion de sonido sucede en el server y la mayoria del
-// control sucede en el lenguaje SC (sclang) u otros lenguajes o interfaces
-// que envian OSC al servidor. Otros clientes: Haskell, Python, Ruby, Processing, OF, etc
-
-// Tenemos dos posibilidades cuando usamos una sola compu:
-// localhost e internal
-// El server internal es parte del mismo espacio de memoria del lenguaje
-// El server localhost es un proceso separado corriendo en la misma maquina
-
-// por defecto la variable s almacena al localhost
-
-s.postln
-s.addr
-s.name
-s.serverRunning
-s.avgCPU
-
-// iniciar y detener
-s.boot
-s.quit
-
-//si queremos usar el internal, por defecto
-s = Server.internal
-Server.default = s
-s.boot
-
-//podemos crear nuestros propios servers para controlar por red
-
-//por ahora usemos el server local, que es el default
-Server.default = s = Server.local
-s.boot
 
 //5.Cambiando parámetros
-// Un ejemplo. No trate de entendor todo. Simplemente disfrute del sonido y juegue con los numeros
+// Un ejemplo. No trate de entendor todo. Simplemente disfrute del sonido y juegue con los números
 
 {RLPF.ar(Dust.ar([12, 15]), LFNoise1.ar([0.3, 0.2]).range(100, 3000), 0.02)}.play;
 
-//Cambiar los numeros y volver a evaluar. Uno a la vez. Explicar los cambios.
-//Puede encontrar resultados sonicos interesantes incluso sin entender cada parametro
-// Resonant Low Pass Filter // Dust = pulsos aleatorios // Ruido LF, interpola lineal
+//Cambiar los números y volver a evaluar. Uno a la vez. Explicar los cambios.
+//Puede encontrar resultados sónicos interesantes incluso sin entender cada parámetro
+// Resonant Low Pass Filter // Dust = pulsos aleatorios // Ruido LF, interpolación lineal
 
-// los archivos SC tienen extension .scd por supercollider document. Hay otros con extension .sc que veremos despues (contienen definiciones de clases, SynthDefs, y otros).
+// Los archivos SC tienen extensión .scd por supercollider document. Hay otros con extensión .sc que veremos después (contienen definiciones de clases, SynthDefs, y otros).
 
 //11. Grabar facilmente la salida de SC
 
 //comenzar
 s.record;
 
-//hacer algunos sonidos, ojo con el volumen
+//hacer algunos sonidos, cuidado con el nivel de salida
 {Saw.ar(LFNoise1.kr([2, 3]).range(500, 2000), LFPulse.kr([4, 5]))}.play
 
 //parar
@@ -359,14 +357,13 @@ var apples = 4, oranges = 3, lemons = 8, bananas = 10;
 "End".postln;
 )
 
-~galaApples; // todavia existe
+~galaApples; // todavía existe
 apples; // esta no
 
-//REASIGNACION DE VARIABLES
-// una practica que puede confundirlos es cuando la variables misma
-// se usa en la expresion de reasignacion
+// Reasignación de variables
+// Una práctica que puede confundir: la misma variables se usa en la expresión de reasignación:
 
 x = 10
 x = x + 1
 
-// en programacion el signo igual no es como la igualdad matematica donde x = x + 1 nunca puede ser verdad
+// En programación el signo igual no es como la igualdad matemática donde x = x + 1 nunca puede ser verdad

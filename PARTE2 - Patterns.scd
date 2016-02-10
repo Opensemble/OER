@@ -38,17 +38,16 @@ Pbind(\degree, Pseq([0, 1, 2, 3, 4, 5, 6, 7], 1), \dur, 0.2).play
 a = Pseq([0,2,3,4,5],2).asStream;
 a.next
 
-//En lugar de proveer un único numero fijo para el grado de la escala (como en el primer ejemplo), estamos usando un Pseq, una receta para una secuencia de números. Podemos extenderlo a duraciones:
+//En lugar de proveer un único número fijo para el grado de la escala (como en el primer ejemplo), estamos usando un Pseq, una receta para una secuencia de números. Podemos extenderlo a duraciones:
 
 Pbind(\degree, Pseq([0, 1, 2, 3, 4, 5, 6, 7], 5), \dur, Pseq([0.2, 0.1, 0.1, 0.2, 0.2, 0.35], inf)).play;
 
 // Repetimos el Pseq con alturas 5 veces. Reemplazamos la duración fija por otro Pseq que tiene 6 valores y una repetición infinita.
 
 // Pbind detiene su ejecución luego de que el Pseq más corto haya terminado su trabajo
+// Cuando proveemos secuencias de diferentes tamaños, Pbind las recicla como sea necesario.
 
-// Cuando proveemos secuencias de diferentes tamaños, Pbind las loopea como sea necesario.
-
-//13.3 Hacer el código mas legible es importante
+//13.3 Es importante hacer el código mas legible
 // Indentamos el Pbind. Incorporemos este hábito.
 // Ahora tenemos que encerrarlo en un bloque de código porque ya no es una única línea
 
@@ -68,10 +67,10 @@ Pbind (
 //figura : fig-piano-keyboard-degree-note-midinote-freq.png
 
 // * Si prefiere usar alturas cromáticas, puede usar \note
-//    el 0 es el Do central, pero los pasos son semitonos
+//    el 0 es el DO central, pero los pasos son semitonos
 
-// * Si prefiere usar numeracion de nota MIDI, usamos \midinote
-//    (60 = C central, 61 = C#, etc)
+// * Si prefiere usar numeración MIDI, utilizar el símbolo \midinote
+//    (60 = DO central, 61 = C#, etc)
 
 // * Si prefiere especificar frecuencias, directamente en Herz, use \freq
 
@@ -104,15 +103,15 @@ Pbind(
 ).play()
 )
 
+// Tomar este último Pbind como punto de partida para experimentar.
+//Las amplitudes estan normalizadas, entre 0 y 1
+//Legato funciona mejor entre 0.1 y 1
+
 //Las duraciones estan en beats.
 //El default es 1 beat por segundo (60 BPM)
 //Pbind().play(TempoClock(120/60)) para cambiar el tempo
+//Mirar: Clock, TempoClock, SystemClock y AppClock
 
-//Las amplitudes estan normalizadas, entre 0 y 1
-
-//Legato funciona mejor entre 0.1 y 1
-
-// Tomar este último Pbind como punto de partida para experimentar.
 // Recordar que podemos usar valores fijos, no es necesario usar expresiones como Pseq([0.2, 0.2, 0.2, ...], 100); ni siquiera Pseq([0.2], inf), simplemente 0.2.
 
 //13.6 Prand
@@ -129,7 +128,6 @@ Pbind(
 
 // ahora probemos Prand en duraciones, amplitudes y legato
 
-
 //13.7 Pwhite
 // Un generador de números aleatorios con distribución uniforme (white noise).
 // Por ejemplo: Pwhite(100, 500) nos da números aleatorios en ese rango
@@ -143,12 +141,12 @@ Pbind(
 ).trace.play;
 )
 
+// Para generar floats con Pwhite: Pwhite(100, 500.0)
+// Por ejemplo las amplitudes van de 0.0 hasta 1.0
+
 // El mensaje trace imprime en la Post window los valores de cada evento. Útil para debug o entender lo que sucede.
 
 // Repasamos la diferencia entre Prand y Pwhite
-
-// Para generar floats con Pwhite: Pwhite(100, 500.0)
-// Por ejemplo las amplitudes van de 0.0 hasta 1.0
 
 //Ejemplos y preguntas
 // Escribimos una escala menor con \note
@@ -183,18 +181,17 @@ Pbind(
 
 //13.8 Expandiendo nuestro vocabulario de Patterns
 
-//Ya sabemos especificar valores de alturas, duraciones, amplitudes y legato, y sabemos embeber otros patterns (Pseq, Prand, Pwhite) para generar cambios de parametros interesantes.
+//Ya sabemos especificar valores de alturas, duraciones, amplitudes y legato, y sabemos embeber otros patterns (Pseq, Prand, Pwhite) para generar cambios de parámetros interesantes.
 
 //Los siguientes ejemplos introducen seis miembros más de la familia Pattern. Trataremos de entender cómo funcionan siguiendo estas estrategias:
 
-// - analizar y describir la melodia que escuchamos
+// - analizar y describir la melodía que escuchamos
 // - observar el nombre del pattern. Por ejemplo Pshuf
 // - mirar los argumentos del pattern
 // - usar .trace.play para ver los valores en los eventos
 // - confirmar lo que suponemos con los archivos de ayuda usando [ctrl+D] sobre el nombre del pattern
 
 // Pser
-
 (
 Pbind(
 	\note, Pser([0, 2, 3, 5, 7, 8, 11, 12], 11),
@@ -253,16 +250,15 @@ Pbind(
 ).play;
 )
 
-// Practique con estos patterns. Pbind es como un score, con la ventaja de que no estamos limitados a escribir secuencias fijas de notas y duraciones: podemos describir procesos de parametros musicales dinamicos. Esto es una sencilla intro a la composicion algoritmica!
+// Practique con estos patterns. Pbind es como un score, con la ventaja de que no estamos limitados a escribir secuencias fijas de notas y duraciones: podemos describir procesos musicales dinamicos y parametrizables. Esto es una sencilla intro a la composicion algoritmica.
 
 // La documentacion completa de patters llamada "A Practical Guide to Patterns" está disponible online:
 Pattern Guide
 
-
-// 14. Mas trucos con patterns
+// 14. Más trucos con patterns
 
 // 14.1 Acordes
-// se escriben como listas de valores (Array) de altura
+// Se escriben como listas de valores (Array) de altura
 Array
 
 (
@@ -278,28 +274,28 @@ Pbind(
 	\note, Pseq([[-7, 3, 7, 10], [0, 3, 5, 8]], 2),
 	\dur, 1,
 	\legato, 0.4,
-	\strum, 0.4 // probar 0, 0.1, 0.2, etc
+	\strum, 0.1 // probar 0, 0.1, 0.2, etc
 ).play;
 )
 
 // 14.2 Escalas
-// Al usar \degree, podemos agregar otra linea con el simbolo \scale
+// Al usar \degree, podemos agregar otra linea con el símbolo \scale
 
 (
 Pbind(
-	\scale, Scale.superLocrian,    //escala alterada o 7mo modo de melodica
+	\scale, Scale.superLocrian,    //escala alterada o 7mo modo de melódica
 	\degree, Pseq([0, 1, 2, 3, 4, 5, 6, 7], 1),
 	\dur, 0.35;
 ).play;
 )
 
-// Evaluar este metodo para ver una lista de todas las escalas posibles
+// Evaluar este método para ver una lista de todas las escalas posibles
 Scale.directory;
 
-// Si necesitamos un grado cromatico entre dos grados diatonicos, hacemos esto:
+// Si necesitamos un grado cromático entre dos grados diatónicos, hacemos esto:
 (
 Pbind(
-	\degree, Pseq([0, 1, 2, 3, 3.1, 4, 3.2], 1), //3.2 y 4 = enarmnoia
+	\degree, Pseq([0, 1, 2, 3, 3.1, 4, 3.2], 1), //3.2 y 4 = enarmonía
 ).play;
 )
 
@@ -307,13 +303,13 @@ Pbind(
 // Como no especificamos una \scale, se asume Scale.major
 
 // 14.3 Transposición
-// Para transponer cromaticamente, usar el simbolo \ctranspose
-// Este trabaja con \degree, \note y \midinote.
+// Para transponer cromaticamente, usar el símbolo \ctranspose
+// Funciona con \degree, \note y \midinote.
 
 (
 Pbind(
 	\note, Pser([0, 2, 3, 5, 7, 8, 11, 12], 11),
-	\ctranspose, 0, // una octava arriba (12 semitonos)
+	\ctranspose, 12, // una octava arriba (12 semitonos)
 	\dur, 0.25;
 ).play;
 )
@@ -327,7 +323,7 @@ Pbind(\note, Pseq([0, 0.5, 1, 1.5, 1.75, 2], 1)).play;
 Pbind(\midinote, Pseq([60, 69, 68.5, 60.25, 70], 1)).play;
 
 // 14.5 Tempo
-//  Los valores que le damos a la clave \dur estan en numero de beats, es decir: 1 = un beat, 0.5 = medio beat, etc
+//  Los valores que le damos a la clave \dur están en número de beats, es decir: 1 = un beat, 0.5 = medio beat, etc
 // Si no especificamos nada distinto, el tempo default es 60 BPM
 
 // Vamos a crear un nuevo TempoClock para indicar un tempo distinto
@@ -336,7 +332,7 @@ Pbind(\midinote, Pseq([60, 69, 68.5, 60.25, 70], 1)).play;
 Pbind(
 	\degree, Pseq([0, 0.1, 1, 2, 3, 4, 5, 6, 7]),
 	\dur, 1;
-).play(TempoClock(240/60)); // 120 BPM dividido 60 = 2 BPS
+).play(TempoClock(120/60)); // 120 BPM dividido 60 es igual a 2 BPS
 )
 
 // De paso, note que no hay argumento de repeat en el ejemplo anterior. Por defecto el pattern toca la secuencia una vez
@@ -345,7 +341,8 @@ Pbind(
 Pbind().play
 
 // 14.6 Silencios
-// El numero dentro de Rest es la duracion del silencio en beats. Los silencios pueden ir en cualquier parte en el Pbind, no solo en la linea de \dur (pero la duración del evento-silencio seguirá estando definida por dur)
+
+// El número dentro de Rest es la duración del silencio en beats. Los silencios pueden ir en cualquier parte en el Pbind, no sólo en la linea de \dur (pero la duración del evento-silencio seguirá estando definida por dur)
 
 (
 Pbind(
@@ -357,9 +354,9 @@ Pbind(
 Pbind(\note, Pseq([1, 2, 3, 4, 5, 6, 7], inf), \dur, Pseq([1, 1, Rest(2)], inf)).trace.play
 
 
-// 14.7 Ejecutar dos o mas Pbinds en simultaneo
+// 14.7 Ejecutar dos o más Pbinds en simultáneo
 
-// Los encerramos en un bloque de codigo
+// Los encerramos en un bloque de código
 
 ( // abre bloque
 Pbind(
@@ -423,13 +420,13 @@ t = TempoClock(76/60);
 }.fork(t);
 )
 
-// Para metodos avanzados de ejecutar Pbinds simultaneos y en secuencia, estudiar Ppar y Pspawner. Para mas infor sobre fork, revisar la ayuda de Routine
+// Para ver métodos avanzados para ejecutar Pbinds simultaneos y en secuencia, estudiar Ppar y Pspawner. Para más información sobre fork, revisar la ayuda de Routine
 Ppar
 Pspawner
 Routine
 
 // 14.8 Usando variables
-// Es recomendable almacenar las listas de valores en variables. Podemos reutilizarlas y hacer mas legible nuestro codigo
+// Es recomendable almacenar las listas de valores en variables. Podemos reutilizarlas y hacer más legible nuestro código
 
 // Vamos a usar c varias veces:
 c = [0, 2, 3, 5, 7, 8, 11, 12];
@@ -459,7 +456,7 @@ Pbind(
 //------------------------------------------------------------------
 
 // 15. Comenzar y detener Pbinds independientes
-// Una pregunta comun, especialmente cuando el Pbind corre infinitamente con inf. Como puedo detener y comenzar Pbinds individuales?
+// Una pregunta común, especialmente cuando el Pbind corre infinitamente con inf. Cómo puedo detener y comenzar Pbinds individuales?
 
 // 15.1 Pbind como un score
 // Pbind es una receta para producir sonidos. Un conjunto de instrucciones para realizar un pasaje musical. Necesitamos un ejecutante que lo interprete. Separemos estos componentes
@@ -498,8 +495,7 @@ p.play;
 
 //15.3 Ejemplo
 
-// Un ejemplo más elaborado. La melodia superior fue tomada del Album for the Youth de Tchaikovsky. La voz inferior fue agregada por el autor del tutorial
-// Hay una partitura en la pagina 40
+// Un ejemplo más elaborado. La melodia superior fue tomada del Album for the Youth de Tchaikovsky. La voz inferior fue agregada por el autor del tutorial (Rubiaro). Hay una partitura en la página 40
 
 // Define el score
 (
@@ -516,7 +512,7 @@ var myDurs = Pseq([Pn(1, 5), 3, Pn(1, 5), 3, Pn(1, 6), 1/2, 1/2, 1, 1, 3, 1, 3],
 );
 )
 
-// Tocar los dos en simultaneo:
+// Tocar los dos en simultáneo:
 (
 ~player1 = ~upperMelody.play;
 ~player2 = ~lowerMelody.play;
@@ -534,9 +530,7 @@ var myDurs = Pseq([Pn(1, 5), 3, Pn(1, 5), 3, Pn(1, 6), 1/2, 1/2, 1, 1, 3, 1, 3],
 
 //primero: observemos el uso de variables. myDurs, es una variable local, solo necesaria al momento de definir el score
 
-// segundo: notemos la separacion entre partituras y ejecutantes. Almacenamos partituras en ~upperMelody y ~lowerMelody. player1 y 2 almacenan los EventStreamPlayer
-
-
+// segundo: notemos la separacion entre partituras y ejecutantes. Almacenamos partituras en ~upperMelody y ~lowerMelody. ~player1 y ~player2 almacenan los objetos EventStreamPlayer.
 
 //EJEMPLO BAJO
 (
@@ -551,6 +545,9 @@ SynthDef(\bass, { |freq = 440, gate = 1, amp = 0.5, slideTime = 0.17, ffreq = 11
     Out.ar(0, sig ! 2)
 }).add;
 )
+
+//test:
+//Synth(\bass, [\freq, 100]).play;
 
 (
 TempoClock.default.tempo = 70/60;
@@ -611,7 +608,6 @@ window.front;
 )
 
 p.stop;
-
 
 // EJEMPLO 3 -- DISPARA PATTERN POR AMPLITUD MIC   ------------------------------------------------------------------------
 (
