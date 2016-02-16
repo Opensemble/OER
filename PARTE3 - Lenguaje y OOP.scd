@@ -6,9 +6,9 @@
 // Todo en SC es un objeto. Incluso los números. Podemos requerir cierta info o acción por parte de un objeto enviándole un mensaje. Cuando escribimos 2.squared, el mensaje squared se le envía al objeto 2. El objeto ejecuta el método asociado.
 
 // Las clases definen un tipo de objeto. Se ordenan en una jerarquía de clases. Es una forma de reutilizar clases definidas previamente.
-// Ejemplo de jerarquía en pagina 42
+// Ejemplos de jerarquías en carpeta de figuras
 
-// La estructura básica es RECEPTOR.MENSAJE(ARGUMENTOS)
+// La estructura básica de una expresión que involucra un objeto es RECEPTOR.MENSAJE(ARGUMENTOS)
 // Identifiquemos cada elemento en el próximo ejemplo
 
 [1, 2, 3, "wow"].reverse;
@@ -35,13 +35,11 @@ round(3.1415, 0.1);
 
 // Ejercicio: escribir la siguiente sentencia usando notación funcional. 100.0.rand.round(0.01).dup(4)
 
-//-------------------
-// dup(round(rand(100.0), 0.01), 4)
-
 // 18. Anidamiento (Nesting)
 //El anidamiento es la práctica de incorporar llamadas a funciones o procedimientos, (unas) dentro de otras, mediante la inclusión de diversos niveles de paréntesis.
 
-// Cuando el anidamiento tiene muchos niveles, podemos usar nuevas lineas e indentacion para mayor claridad. Cada nivel de indentacion deberia indicar un nivel de anidamiento
+// Cuando el anidamiento tiene muchos niveles, podemos usar nuevas líneas e indentacion para mayor claridad. Cada nivel de indentación debería indicar un nivel de anidamiento.
+//Podemos indentar automaticamente, seleccionando el codigo y Edit->Autoindent
 
 // Identificar la estructura y los argumentos en el siguiente ejemplo
 
@@ -74,30 +72,45 @@ round(3.1415, 0.1);
 }.play
 )
 
-//Podemos indentar automaticamente, seleccionando el codigo y Edit->Autoindent
+// Filtros Comb: "https://es.wikipedia.org/wiki/Filtro_comb"
 
 // 19. Símbolos de cerramiento (enclosure)
 
-// Hay 4 tipos de estos símbolos: (paréntesis) [corchetes] {llaves} y "comillas". Cada uno que se abre, debe cerrarse. Esto se llama balancing y SuperCollider nos ayuda a lograrlo.
+// Hay 4 tipos de estos símbolos: (paréntesis) [corchetes] {llaves} y "comillas".
+// Cada uno que se abre, debe cerrarse. Esto se llama balancing y SuperCollider nos ayuda a lograrlo.
 
 // 19.1. Comillas
-//Strings:
+
+// Strings:
 "lista de caracteres, incluyendo espcios" //.reverse
 
-// Las comillas simples crean símbolos, tambien la barra invertida \. Un símbolo es un identificador único en todo el programa
+// Símbolos:
+// Las comillas simples crean símbolos, tambien la barra invertida '\'.
+// Un símbolo es un identificador (o nombre) único en todo el programa.
+// Pueden usarse para representar valores constantes simbólicos, claves de diccionarios, etc.
+// Los símbolos se representan sintácticamente como literales:
+Literals
 
 \unsimbolo  == 'unsimbolo'
 \unsimbolo  === 'unsimbolo'  // identidad
 
-"unstring" == "unstring"
-"unstring" === "unstring"  // atención
+"unstring" == "unstring"   // igualdad
+"unstring" === "unstring"  // atención!
+
+// Identidad es la propiedad de un objeto que lo lleva a distinguirse de otros. En muchos lenguajes de programación la identidad de un objeto esté determinada por la dirección de memoria en la que se encuentra el objeto, pero este comportamiento puede ser variado redefiniendo la identidad del objeto a otra propiedad."
 
 // Sobre identidad, puede leer en:
 //"https://es.wikipedia.org/wiki/Objeto_(programaci%C3%B3n)
 
+// Los símbolos con espacios blancos deben ir entre comillas simples:
+'foo bar'
+
+// Un string puede convertirse en un Símbolo
+"supercollider".scramble.asSymbol;
+
 // 19.2 Paréntesis
 // Se usan para:
-//      - definir listas de argumentos:   rrand(0,10)
+//      - definir listas de argumentos: rrand(0,10)
 //      - forzar la precedencia: 5 + (10 * 4)
 //      - crear bloques de codigo
 
@@ -126,8 +139,7 @@ exprand(1, 1000.0);
 ~sillyRand2 = {rrand(0, 10)}; // una función
 ~sillyRand2.value; // evaluar múltiples veces
 
-
-// elige un numero y lo duplica
+// elige un número y lo duplica
 rand(1000.0).dup(5);
 
 // ejecuta la funcion 5 veces y guarda los resultados en un array
@@ -140,10 +152,27 @@ rand(1000.0).dup(5);
 
 //La sintaxis para el if/else: if(condition, {true action}, {false action})
 
-if( 10 > 50, {"verdadero"}, {"falso"});
+if(10 > 50, {"verdadero"}, {"falso"});
 
-// Tabla de condicionales en SC en pág 51 del tutorial
-// Las últimas dos líneas muestran cómo escribir expresiones largas usando notación funcional y notación de receptor: (40.even).and(13.odd) y or(40<30, 13.odd)
+
+// Mirar los shortcuts sintácticos para estructuras de control: Syntax Shortcuts
+
+// Mover bloques fuera de la lista de argumentos
+// En lugar de escribir:
+if (x < 3, {\abc}, {\def});
+// o
+while({ a < b }, { a = a * 2 });
+
+// Podemos escribir:
+if (x < 3) {\abc} {\def}
+// o
+while { a < b } { a = a * 2 };
+
+// Tabla de condicionales en la carpeta figuras
+// Las últimas dos líneas muestran cómo escribir expresiones largas usando notación funcional y notación de receptor: (40.even).and(13.odd) y or(40 < 30, 13.odd)
+
+//La clase Boolean explica las operaciones lógicas
+//"Boolean is the superclass of True and False which are the concrete realizations. In code True and False are represented by the literal values true and false."
 
 // Otra estructura de control es el CASE: define pares de funciones para ser evaluadas en orden, hasta que una de ellas retorna true
 
@@ -155,18 +184,17 @@ if( 10 > 50, {"verdadero"}, {"falso"});
 
 // Ejemplo
 
-(
 ~num = -2;
 
+(
 case
 {~num == 0} {"WOW".postln}
 {~num == 1} {"ONE!".postln}
 {~num < 0} {"negative number!".postln}
-{true} {"last case scenario".postln};
+{true} {"last case scenario".postln}; // La última línea es un default, que "ataja" todos los casos no contemplados
 )
-// La última línea es un default, que "ataja" todos los casos no contemplados
 
-//Para mas info, mirar el archivo de ayuda de
+//Para más info, mirar el archivo de ayuda de
 Control Structures
 
 //21. Funciones
@@ -176,7 +204,7 @@ f = { 2 + 2 }; // define the function
 f.value; // pone la función a trabajar
 
 //Usamos arg para especificar argumentos (parametros formales)
-f = {arg a, b; ["a plus b", a+b, "a times b", a*b].postln}; // define la función
+f = {arg a, b; ["a + b", a + b, "a x b", a * b].postln}; // define la función
 
 //ahora podemos pasarle cualquier par de números como argumentos
 f.value(3, 7);
@@ -208,8 +236,7 @@ var today, dayName, actions;
 
 // Otra forma de notacion para argumentos es encerrarlos entre barras verticales, por ejemplo {|a, b| a + b}  es lo mismo que {arg a, b; a + b}
 
-
-// 22.Jugando con Arrays
+// 22. Jugando con Arrays
 // Cada vez que escribimos una coleccion de elementos entre corchetes, creamos una instancia de la clase Array
 Array
 
@@ -241,7 +268,7 @@ a.permute(3); // intercambia elementos entre posición 0 y 3
 a.mirror;  // hace un palíndromo con el original y el retrogradado
 a.powerset; // retorna todas las combinaciones posibles con los elementos (subconjuntos)
 
-// Podemos usar aritmetica con los arrays
+// Podemos usar aritmética con los arrays
 
 [1, 2, 3, 4, 5] + 10;
 [1, 2, 3, 4, 5] * 10;
@@ -268,7 +295,7 @@ Array.geom(7, 100, 0.9); // 7 items; start at 100; multiply by 0.9 each time
 // El método .fill
 Array.fill(10, "same"); //"same".dup(10)
 
-// Compare:
+// Comparar:
 Array.fill(10, rrand(1, 10));
 Array.fill(10, {rrand(1, 10)});
 
@@ -281,7 +308,6 @@ Array.fill(10, {arg wow; wow + 1 * 440});
 // .newClear
 a = Array.newClear(7); // Crea un arreglo vacío
 a[3] = "wow";
-
 
 // 22.2 El signo de exclamacion
 
@@ -299,7 +325,7 @@ a[3] = "wow";
 Array.fill(4, 30);
 Array.fill(10, "hello");
 
-// 22.3 Un rango entre parentesis, usando dos puntos
+// 22.3 Un rango entre paréntesis, usando dos puntos
 
 // Un shortcut para generar una serie
 (50..79);
@@ -317,7 +343,6 @@ Array.series(30, 50, 1);
 series(50, 53, 79);
 Array.series(10, 50, 3);
 
-
 // 22.4 Cómo hacer "do" sobre un Array
 
 // Usamos el método .do para realizar una acción sobre todos los elementos del array
@@ -327,7 +352,7 @@ Array.series(10, 50, 3);
 // Ahora realizamos una acción simple con cada elemento de la lista:
 ~myFreqs.do({arg item, count; ("Item " ++ count ++ " is " ++ item ++ " Hz. Closest midinote is " ++ item.cpsmidi.round).postln});
 
-// La funcion puede tomar dos argumentos: el objeto y el indice. Los nombres pueden ser cualquiera, pero el orden importa: item, count.
+// La funcion puede tomar dos argumentos: el objeto y el índice. Los nombres pueden ser cualquiera, pero el orden importa: item, count.
 
 // Si no necesitamos el contador, usamos un único argumento:
 ~myFreqs.do({arg item; {SinOsc.ar(item, 0, 0.1)}.play});
@@ -338,9 +363,6 @@ Array.series(10, 50, 3);
 
 // Explorar el metodo .collect, que es similar a .do, pero retorna una nueva lista con los resultados obtenidos
 Collection.collect
-
-//NOTA INVESTIGAR QUE ES ESTO
-List[1, 2, 3, 4]
 
 // 23 Obtener ayuda
 // Se pueden evaluar los ejemplos directamente desde el archivo de ayuda.
