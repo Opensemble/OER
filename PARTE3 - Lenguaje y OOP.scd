@@ -255,7 +255,7 @@ a[0]	;  // igual que el anterior
 a.wrapAt(9); // devuelve el item en la posición, volviendo al comienzo si la posición es mayor a.size
 
 ["wow", 99] ++ a; // concatenación
-a ++ \hi;  // un símbolo es un único caracter
+a ++ \hi;  // un símbolo es un único elemento
 a ++ 'hi';
 a ++ "hi"; // un string es una colección de caracteres
 
@@ -288,9 +288,9 @@ Array.series(size: 6, start: 10, step: 3);
 // Serie geométrica
 Array.geom(size: 10, start: 1, grow: 2);
 
-// Comparamos:
-Array.series(7, 100, -10); // 7 items; start at 100, step of -10
-Array.geom(7, 100, 0.9); // 7 items; start at 100; multiply by 0.9 each time
+// Comparar:
+Array.series(7, 100, -10);
+Array.geom(7, 100, 0.9);
 
 // El método .fill
 Array.fill(10, "same"); //"same".dup(10)
@@ -343,7 +343,7 @@ Array.series(30, 50, 1);
 series(50, 53, 79);
 Array.series(10, 50, 3);
 
-// 22.4 Cómo hacer "do" sobre un Array
+// 22.4 Iterar sobre un Array
 
 // Usamos el método .do para realizar una acción sobre todos los elementos del array
 
@@ -361,8 +361,8 @@ Array.series(10, 50, 3);
 // Por supuesto, en el último caso es mejor hacer esto:
 ~myFreqs.squared;
 
-// Explorar el metodo .collect, que es similar a .do, pero retorna una nueva lista con los resultados obtenidos
-Collection.collect
+// Explorar el metodo .collect de la clase abstracta Collection, que es similar a .do, pero retorna una nueva lista con los resultados obtenidos
+[1, 2, 3, 4].collect({ arg item, i; item + 10 });
 
 // 23 Obtener ayuda
 // Se pueden evaluar los ejemplos directamente desde el archivo de ayuda.
@@ -381,6 +381,6 @@ SinOsc.ar(
 // Si no aparece, la llamamos con [ctrl] + [shift] + [space] y autocompletamos el argumento nombrado con [tab], despues de cada coma
 
 
-//TIP: Crear una carpta con tus propios archivos de ayuda personalizada. Cuando quieras recordar un nuevo truco o como funciona un objeto, escribir ejemplos, explicaciones, diagramas, etc. Puede ser util en un mes o en un anio.
+//TIP: Crear una carpeta con tus propios archivos de ayuda personalizada. Cuando quieras recordar un nuevo truco o como funciona un objeto, escribir ejemplos, explicaciones, diagramas, etc. Puede ser util en un mes o en un anio.
 
 //Los mismos archivos de ayuda pueden encontrarse online en http://doc.sccode.org

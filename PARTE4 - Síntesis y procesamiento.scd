@@ -32,7 +32,7 @@
 
 //s = Server.default = Server.internal
 // s.scope
-//FreqScope.new; // analizador espectral
+FreqScope.new; // analizador espectral
 
 {Saw.ar(freq: MouseX.kr(100, 2500), mul: MouseY.kr(0, 1))}.scope(1, zoom:4)
 
@@ -43,11 +43,11 @@
 
 // Las ugens que funcionan a tasa de control se usan para señales de baja frecuencia o de cambio lento (como una envolvente lineal). Producen un único sample por ciclo de control y por lo tanto usan menos recursos.
 
-// Si la configuracion es de 44.1k, cuando enviamos el mensaje .ar a una UGen, le pedimos que genere 44100 números por segundo.
+// Si la configuración es de 44.1k, cuando enviamos el mensaje .ar a una UGen, le pedimos que genere 44100 números por segundo.
 // Escribimos {SinOsc.ar}.play en sclang, el cual se comunica con scsynth quien genera esos samples.
 
 // Cuando usamos .kr en lugar de .ar, el trabajo en el server tiene algunas diferencias:
-// 1. el número de samples sera de 44100 / 64 = aprox 700. 64 es conocido como período de control.
+// 1. el número de samples por segundo generado será de 44100 / 64 = aprox 700. 64 es conocido como período de control.
 // 2. la señal generada no se rutea a la salida de audio. En cambio suele ser usada para controlar otros parámetros. Como MouseX controlaba la frecuencia de SinOsc
 
 // Entonces las UGens son generadores de números, muy rápidos. Algunos de estos números son señales de audio otras son señales de control.
@@ -68,7 +68,7 @@
 // RESPONDER: son señales unipolares o bipolares?
 
 // Como usamos .ar, este generador de ruido de baja frecuencia esta enviando 44100 samples por segundo a la salida de audio. Cada sample con valor entre -1 y 1. Todo se calcula en el server.
-{LFNoise0.ar(10).poll}.play
+{LFNoise0.ar(10000).poll}.play
 
 // Experimentar cambiando la frecuencia del generador de ruido y su interpolación
 
@@ -91,7 +91,7 @@ MouseX  // usemos ctrl+d para ver la ayuda
 
 // 27.1 Escalar con el metodo range
 
-// .range toma la salida entre -1 y 1 y la escala a los valores que le demos.
+// .range toma la salida entre -1 y 1 y la escala a los valores que indicamos.
 
 // Para controlar una UGen tenemos que saber qué números aceptan sus parametros. Son frecuencias o amplitudes? o es el número de armónicos o el índice de modulación fm?
 
@@ -101,7 +101,7 @@ MouseX  // usemos ctrl+d para ver la ayuda
 //{SinOsc.ar(LFPulse.kr(1, width: 0.5).range(400, 500))}.play
 
 // 27.2 Escalar con mul y add
-// Ver figura
+// Ver figura en carpeta de figuras, PARTE 4
 
 // Vemos la equivalencia con .range
 
@@ -140,7 +140,6 @@ c = { Saw.ar(LFNoise0.kr(15).range(2000, 3000), mul: 0.1) }.play;
 
 a = { Saw.ar(SinOsc.kr(1).range(1000, 2000), mul: 0.2) }.play;
 
-
 // Detener
 a.free;
 b.free;
@@ -163,14 +162,14 @@ x.free;
 // Se usan para rutear señales de audio. Son similares a canales de una consola. SC tiene 128 canales de audio por defecto. También hay buses de control (más adelante los vemos).
 
 // Con [ctrl+M] abrimos la ventana Meter
-// Figura con buses y correspondencias
+
+// Hay una figura sobre buses y sus correspondencias
 
 // Los buses de audio van de 0 a 127. Los primeros 8, de 0 a 7 se reservan para canales de salida de la placa de audio. Los próximos 8, de 8 a 15, se reservan para las entradas. Todos los demás, de 16 a 127, están libres para ser usados de cualquier forma, por ejemplo si queremos rutear audio de una UGen a otra.
 
 // 30.1 Ugens de entrada y salida de audio: In / Out
 
 // Evaluar este código
-
 {Out.ar(1, SinOsc.ar(440, 0, 0.1))}.play; // canal derecho
 
 // La UGen Out se encarga de rutear señales a buses específicos. El segundo argumento puede ser una combinacion de UGens. Cambiar el primer argumento entre 0 y 7 y verificar la actividad en los medidores.
@@ -178,7 +177,7 @@ x.free;
 // Veamos un ejemplo simple de cómo usar un bus para rutear una senal a un efecto
 
 // Creamos el efecto
-f = {Out.ar(0, BPF.ar(in: In.ar(55), freq: MouseY.kr(1000, 5000), rq: 0.1))}.play; //rq = (bandwidth/ cutoffFreq)
+f = {Out.ar(0, BPF.ar(in: In.ar(55), freq: MouseY.kr(1000, 5000), rq: 0.1))}.play; //rq = (bandwidth / cutoffFreq)
 
 // Creamos la fuente
 n = {Out.ar(55, WhiteNoise.ar(0.5))}.play;
@@ -211,7 +210,7 @@ n = {Out.ar(55, WhiteNoise.ar(0.5))}.play;
 // Esto se llama expansión multicanal. Obtenemos 2 señales, al definir un argumento como array. Es una de las aplicaciones más poderosas de SC. El lenguaje crea dos copias de Saw, una con 440Hz enviada al bus 0 y otra con 570Hz enviada al bus 1. Si agregamos una frecuencia más a la lista, la manda al bus 2 (no la escuchamos en estéro)
 
 // Ayuda
-"Multichannel Expansion"
+Multichannel Expansion
 
 // Además, podemos usar arreglos adicionales en otros argumentos de la misma UGen o en argumentos de otras Ugen de la misma función de grafo. SC genera sintes de acuerdo a esos valores.
 
@@ -223,6 +222,25 @@ n = {Out.ar(55, WhiteNoise.ar(0.5))}.play;
 a = {Out.ar(0, SinOsc.ar(freq: [800, 880], mul: LFPulse.ar(2)))}.play;
 a.free;
 
+//NOTAS ADICIONALES:-----------------------------------
+
+//1)
+// When a constructor is parameterized by two or more arrays, then the number of channels created is equal to the longest array, with parameters being pulled from each array in parallel. The shorter arrays will wrap.
+// for example, the following:
+// Pulse.ar([400, 500, 600],[0.5, 0.1], 0.2)
+// is equivalent to:
+// [ Pulse.ar(400,0.5,0.2), Pulse.ar(500,0.1,0.2), Pulse.ar(600,0.5,0.2) ]
+
+//2)
+/*Protecting arrays against expansion
+Some unit generators such as Klank require arrays of values as inputs. Since all arrays are expanded, you need to protect some arrays by a Ref object. A Ref instance is an object with a single slot named 'value' that serves as a holder of an object. Ref.new(object) is one way to create a Ref, but there is a syntactic shortcut. The backquote ` is a unary operator that is equivalent to calling Ref.new(something). So to protect arrays that are inputs to a Klank or similar UGens you write:
+Klank.ar(`[[400,500,600],[1,2,1]], z)
+You can still create multiple Klanks by giving it an array of Ref'ed arrays.
+Klank.ar([ `[[400,500,600],[1,2,1]],  `[[700,800,900],[1,2,1]] ], z)
+is equivalent to:
+[ Klank.ar(`[[400,500,600],[1,2,1]], z),  Klank.ar(`[[700,800,900],[1,2,1]], z)]*/
+
+//--------------------------------------------------------------
 // 33. La clase Bus
 // Un ejemplo que muestra todo lo aprendido recientemente
 
@@ -237,10 +255,10 @@ a.free;
 
 // La eleccion del bus 55 fue arbitraria (entre 16 y 127). A medida que nuestros programas crecen en complejidad es poco conveniente mantener registro de los numeros de buses de forma manual.
 
-// Creamos y asignamos el bus. Métodos de clase.
+// Creamos y asignamos el bus. Método de clase:
 ~myBus = Bus.audio(s, 2);
 
-// El primer argumento de Bus.audio es s, que apunta al server. El segundo argumento indica la cantidad de buses que necesitamos alocar. Entonces referenciamos esos buses con un nombre apropiado, podría ser reverbBus o delayBus, etc.
+// El primer argumento de Bus.audio es s, que apunta al server. El segundo argumento indica la cantidad de buses que necesitamos reservar. Entonces referenciamos esos buses con un nombre apropiado, podría ser reverbBus o delayBus, etc.
 
 // Métodos de instancia: index, rate, numChannels, free
 ~myBus.index
@@ -266,7 +284,7 @@ p = {Pan2.ar(in: SinOsc.ar(880, 0, Pulse.ar(10, 0.5)), pos: SinOsc.kr(1/2), leve
 
 p.free;
 
-// El argumento pos espera un número entre -1 (izq) y 1  (der). Usamos una señal bipolar como SinOsc. Para configuraciones multicanal, mirar las clases Pan4 y PanAz. También hay plugins para Ambisonics.
+// El argumento pos espera un número entre -1 (izq) y 1 (der). Usamos una señal bipolar como SinOsc. Para configuraciones multicanal, mirar las clases Pan4 y PanAz. También hay plugins para Ambisonics, como ATK.
 
 // Aquí un ejemplo más elaborado. Una onda sierra pasa por un BPF de banda angosta (rq: 0.01). Responder las siguientes preguntas:
 
@@ -288,10 +306,8 @@ x.free;
 // Por qué se usa 20 en mul del BPF
 // Qué parte del código controla el ritmo?
 // ------
-// Ayuda:
-// Patch gráfico
+// Ayuda: patch gráfico
 //{Saw.ar(30, mul: LFPulse.kr(LFNoise1.kr(1).range(1,3), width:0.1))}.play
-
 
 //35. Mix y Splay
 
@@ -337,7 +353,7 @@ c.free;
 
 // Síntesis aditiva
 (
-n = { Mix.fill(32, {arg counter;
+n = { Mix.fill(8, {arg counter;
 	var partial = counter + 1; // empezamos de 1, no queremos dc
 	SinOsc.ar(partial * 440, mul: 1/partial) * 0.1
 	})
@@ -348,9 +364,10 @@ FreqScope.new;
 )
 n.free;
 
-// Nota: Suena muy distinto a esto? y si le agregamos parciales a la anterior?
+// Nota: Suena muy distinto a esto?
 {Saw.ar(440, 0.3)}.play
-// la diente de sierra tiene todos los parciales. Energía: 1/n, n = nro de parcial
+
+// La onda diente de sierra tiene todos los parciales. Energía: 1/n, n = nro de parcial. Y si le agregamos osciladores a la síntesis anterior?
 
 // 36. Reproducir un archivo de audio
 
@@ -378,7 +395,6 @@ n.free;
 // Cambiar la dirección (reverse)
 {PlayBuf.ar(1, ~buf1, -1, loop: 1)}.play; // reverso
 {PlayBuf.ar(1, ~buf1, -0.5, loop: 1)}.play; // reverso y lento
-
 
 //Ejemplo con patterns
 (
@@ -473,12 +489,11 @@ Env.triangle.plot;
 // Escuche:
 {SinOsc.ar([440, 442], mul: Env.triangle.kr(2))}.play;
 
-// Una envolvente puede ser un multiplicador en cualquier lugar de su código
+// Una envolvente puede ser un multiplicador en cualquier lugar del código
 {SinOsc.ar([440, 442]) * Env.triangle.kr(2)}.play;
 
 // 38.3 Env.linen
 // Describe una envolvente trapezoidal con ataque, sustain y release. También podemos especificar level y curve.
-
 
 // Mire:
 Env.linen(1, 2, 1, 0.2, \sin).plot //sin = segmentos con forma de S
@@ -486,7 +501,7 @@ Env.linen(1, 2, 1, 0.2, \sin).plot //sin = segmentos con forma de S
 {SinOsc.ar([300, 350], mul: Env.linen(0.01, 2, 1, 0.2).kr(2))}.play;
 
 // 38.4 Env.pairs
-// Si necesita más flexibilidad, con Env.pairs se pueden tener envolventes de cualquier forma y duración. Toma 2  argumentos: un array de pares [tiempo, nivel] y un tipo de curva.
+// Si necesita más flexibilidad, con Env.pairs se pueden tener envolventes de cualquier forma y duración. Toma 2 argumentos: un array de pares [tiempo, nivel] y un tipo de curva.
 
 (
 {
@@ -522,7 +537,7 @@ Env.new([0, 1, 0.9, 0], [0.1, 0.5, 1],[-5, 0, -5]).plot;
 x = {arg gate = 1, freq = 440; SinOsc.ar(freq: freq, mul: Env.asr(0.5, 0.8, 3).kr(doneAction: 2, gate: gate))}.play;
 // Detener la nota
 x.set(\gate, 0); // alternativamente, x.release
-x.release;
+x.release; // notar la diferencia con x.free
 
 // ADSR (attack, decay, sustain, release)
 // Tocar la nota:
