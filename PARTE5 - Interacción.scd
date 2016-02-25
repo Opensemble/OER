@@ -3,9 +3,14 @@
 
 // 43. MIDI
 // Los ejemplos asumen alguna familiaridad con el protocolo y dispositivos MIDI
+// See the Using MIDI helpfile for practical considerations and techniques for using MIDI in SC.
+Using MIDI
 
 // Una forma rápida de contectar con todos los dispositivos disponibles SC
 MIDIIn.connectAll;
+
+//NOTE: For general programming, users should not use the MIDIIn class directly. See the MIDIFunc and MIDIdef classes for higher level event matching and more flexible handling of event handlers.
+//Certain MIDI messages are supported only through MIDIIn. These are: sysex, sysrt, smpte.
 
 // Forma rápida de ver todos los mensajes MIDI entrantes
 MIDIFunc.trace(true);
@@ -46,7 +51,6 @@ a.play;
 MIDIdef.noteOn(\someKeyboard, {arg vel, note; a.play});
 MIDIdef.noteOn(\someKeyboard, {nil});
 
-
 // Cómo manejamos mensajes note on y note off para notas sostenidas? La etapa de release de la ADSR de una nota en particular se dispara cuando soltamos la tecla correspondiente del controlador. Para poder hacer esto SC necesita conocer qué sinte se corresponde con cada tecla. Podemos usar un Array para este propósito.
 
 // Un SynthDef con una envolvente ADSR
@@ -85,12 +89,14 @@ s.plotTree
 // Sólo vimos como como leer midi desde SC. Para enviar midi desde SC mirar la ayuda de la clase:
 MIDIOut
 
+// Unlike MIDIIn, with MIDIOut you create an instance of the MIDIOut class with a port and uid. You can have multiple MIDIOut objects to send MIDI to different physical devices. (Many users have reported timing issues with MIDIOut).
+
 //Ejemplo con Pattern
 MIDIClient.init;    // if not already done
 
 (
-    // tu dispositivo
-var    mOut = MIDIOut.newByName("LoopBe Internal MIDI", "LoopBe Internal MIDI").latency_(Server.default.latency);
+// tu dispositivo
+var mOut = MIDIOut.newByName("LoopBe Internal MIDI", "LoopBe Internal MIDI").latency_(Server.default.latency);
 
 p = Pbind(
     \type, \midi,
@@ -108,9 +114,10 @@ p = Pbind(
 p.stop;
 
 // 44. OSC
-//Open Sound Control es una buena forma de comunicar aplicaciones en una computadora o diferentes computadoras en una red.
+// Open Sound Control es una buena forma de comunicar aplicaciones en una computadora o diferentes computadoras en una red.
 
-// El ejemplo muestra cómo enviar mensajes OSC desde un dispositivo a la notebook. // En la computadora que recibe, evaluar este código:
+// El ejemplo muestra cómo enviar mensajes OSC desde un dispositivo a la notebook.
+// En la computadora que recibe, evaluar este código:
 
 (
 OSCdef(

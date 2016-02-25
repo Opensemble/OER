@@ -163,7 +163,7 @@ x.free;
 
 // Con [ctrl+M] abrimos la ventana Meter
 
-// Hay una figura sobre buses y sus correspondencias
+// Hay una figura sobre buses y sus correspondencias en la carpeta de figuras.
 
 // Los buses de audio van de 0 a 127. Los primeros 8, de 0 a 7 se reservan para canales de salida de la placa de audio. Los próximos 8, de 8 a 15, se reservan para las entradas. Todos los demás, de 16 a 127, están libres para ser usados de cualquier forma, por ejemplo si queremos rutear audio de una UGen a otra.
 
