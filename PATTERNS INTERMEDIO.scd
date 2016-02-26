@@ -58,6 +58,10 @@ q = p.asStream;
 
 q.next; // devuelve el próximo valor
 
+q.nextN(10);
+
+// Si el pattern tiene un límite, podemos pedir todos los elementos
+q.all  // cuidado! podemos crashear sclang si esto es infinito
 
 // Además, esta división de trabajo nos permite derivar todos los streams que necesitemos del mismo pattern.
 
@@ -73,6 +77,22 @@ q.next
 // Pattern Guide 02: Basic Vocabulary
 // Acá dejamos algunos ejemplos, de patterns que no vimos antes en el curso.
 
+
+//Pslide(list, repeats, len, step, start, wrapAtEnd): toca segmentos superpuestos de la lista
+Pslide(#[1, 2, 3, 4, 5, 6, 7, 8], 10, 3, 1, 0, false).asStream.all;
+
+// o vemos los segmentos como arreglos separados
+Pslide(#[1, 2, 3, 4, 5, 6, 7, 8], 10, 3, 1, 0, false).clump(3).asStream.all;
+
+// Ejemplo sonoro
+(
+p = Pbind(
+    \degree, Pslide((-6, -3 .. 21), 8, 3, 1, 0),
+    \dur, Pseq(#[0.1, 0.1, 0.2], inf),
+    \sustain, 0.4
+).play;
+)
+
 // Pwrand: selección aleatoria de acuerdo con las probabilidades ponderadas que le damos (como list.wchoose(weights)
 
 // Estas probabilidades favorecen notas de la tríada mayor del primer grado de la escala
@@ -82,15 +102,16 @@ p = Pbind(
     \dur, 0.25
 ).play;
 )
+// normalizeSum: para cada objeto hace: (this / this.sum)
 
 //Place: intercala valores de los sub arrays
 
 Place([0, [1, 2], [3, 4, 5]], 3).asStream.all;
---> [ 0, 1, 3, 0, 2, 4, 0, 1, 5 ]
 
 // Si lo convertimos en una matriz y lo leemos verticalmente, los arreglos originales son claramente visibles:
 Place([0, [1, 2], [3, 4, 5]], 3).clump(3).do(_.postln);
 
+Pclump
 //Ppatlace: toma un valor de cada sub pattern en orden
 
 // Ejercicio del Hanon
@@ -119,6 +140,14 @@ p = Pbind(
 ).play;
 )
 
+// Veamos este ejemplo:
+(
+Ptuple([
+        Pseries(7, -1, 8),
+        Pseq([9, 7, 7, 7, 4, 4, 2, 2], 1),
+        Pseq([4, 4, 4, 2, 2, 0, 0, -3], 1)
+    ], 1).asStream.all
+)
 
 // Números aleatorios y distribuciones de probabilidad
 /*
@@ -161,13 +190,13 @@ Given an array of relative probabilities across the desired range (a histogram) 
 
 // Para ver una distribución, hacemos un histograma:
 
-Pmeanrand(0.0, 1.0, inf).asStream.nextN(10000).histo(200, 0.0, 1.0).plot;
-
+Pmeanrand(0.0, 1.0, inf).asStream.nextN(1000000).histo(200, 0.0, 1.0).plot;
 
 // Patterns personalizados
 // Nos permiten introducir nuestra propia lógica
 
 // Pfunc
+// The next value is the return value from evaluating nextFunc. If .reset is called on a stream made from this pattern, resetFunc is evaluated. The stream will run indefinitely until nextFunc returns nil.
 
 (
 var a, x;
@@ -177,8 +206,11 @@ x.nextN(20).postln;
 x.reset;
 )
 
+//Pfuncn(func, repeats)
+//Pfuncn, however, returns exactly repeats values and then stops
 
 // Proutine (Prout)
+// Use the routineFunc in a routine. The stream's output values are whatever this function .yields. Proutine ends when it yields nil.
 
 (
 var a;
@@ -186,14 +218,13 @@ a = Prout({ loop { 1.yield; 2.yield; 7.yield; 10.do { 1.0.rand.yield } }});
 a.asStream.nextN(100).plot;
 )
 
-
 // Qué es Pbind ?
 
-// En sentido general, Pbind es simplemente una forma de darle nombres a los valores que entregan los patterns que vimos. Cuando le pedimos a un stream de Pbind su próximo valor, el resultado es un objeto Event. Es como un Dictionary (que es una superclase de Event). Un evento es un conjunto de pares "clave-valor".
+// En sentido general, Pbind es simplemente una forma de darle nombres a los valores que entregan los patterns que vimos. Cuando le pedimos a un stream de Pbind su próximo valor, el resultado es un objeto Event. Es  un Dictionary (que es una superclase de Event). Un evento es un conjunto de pares "clave-valor".
 
-e = (freq: 440, dur: 0.5);    // an Event
+e = (freq: 440, dur: 0.5);    // un Event
 
-e.at(\freq)        // access a value by name
+e.at(\freq)        // acceder a un valor por nombre
 e[\freq]
 e.freq        // See IdentityDictionary help for more on this usage
 
@@ -217,14 +248,7 @@ p = Pbind(
 
 p.next(Event.new);    // shorter: p.next(())
 
-// Output:
-( 'degree': 0, 'dur': 0.5 )
-( 'degree': 0, 'dur': 0.5 )
-( 'degree': 4, 'dur': 0.5 )
-( 'degree': 4, 'dur': 0.5 )
-
 //NOTE: Dictionaries in SuperCollider are unordered collections. Even though Pbind processes its child streams in the order given, the results can display the keys and values in any order. This does not affect the behavior of playing Events, as we will soon see.
-
 
 // A diferencia de los Dictionary, los eventos pueden reproducir sonido con .play
 
@@ -233,8 +257,7 @@ p.next(Event.new);    // shorter: p.next(())
 // Cuando invocamos .play sobre un Pattern, se crea un objeto de clase EventStreamPlayer. Este objeto lee los evento uno a uno desde el stream creado a partir del pattern, y llama a play en cada evento. El valor delta en el evento determina cuantos beats debe esperar hasta el próximo evento. Play continúa hasta que el stream del pattern deja de producir eventos o invocamos a .stop en el EventStreamPlayer.
 
 // Variante a Pbind: Pmono
-
-Pbind toca notas separadas por defecto. A veces podemos necesitar un pattern que actúe como un sintetizador monofónico, donde sólo se ejecuta un único nodo Synth y se cambia sus valores con cada evento.
+// Pbind toca notas separadas por defecto. A veces podemos necesitar un pattern que actúe como un sintetizador monofónico, donde sólo se ejecuta un único nodo Synth y se cambia sus valores con cada evento.
 
 // Comparar estos sonidos: Pmono glisa de altura en altura, Pbind ataca cada nota
 
@@ -243,7 +266,6 @@ p.stop;
 
 p = Pmono(\default, \degree, Pwhite(0, 7, inf), \dur, 0.25).play;
 p.stop;
-
 
 // Articular frases es posible encadenándo varios Pmono o usando PmonoArtic
 PmonoArtic
@@ -259,6 +281,15 @@ SynthDef(\default, { arg out=0, freq=440, amp=0.1, pan=0, gate=1;
     OffsetOut.ar(out, Pan2.ar(z, pan, amp));
 }, [\ir]);
 
+//NOTE: Note that Mix.ar and Mix.kr in SC2 are equivalent to Mix.new in SC3, and that Mix.arFill and Mix.krFill are equivalent to Mix.fill.
+
+// VarSaw: Sawtooth-triangle oscillator with variable duty.
+
+// Rand: It generates random numbers (uniform dist) when the SynthDef first starts playing, and remains fixed for the duration of the synth's existence
+
+// OffsetOut: Output signal to a bus, the sample offset within the bus is kept exactly; i.e. if the synth is scheduled to be started part way through a control cycle, OffsetOut will maintain the correct offset by buffering the output and delaying it until the exact time that the synth was scheduled for.
+
+//------------------------------
 
 // Cuando un evento toca un sinte, cualquier valor del evento con el mismo nombre que una entrada de control del SynthDef será pasado al nuevo sinte.
 
@@ -268,24 +299,29 @@ SynthDef(\default, { arg out=0, freq=440, amp=0.1, pan=0, gate=1;
 // Similar to Synth(\default, [freq: 440, amp: 0.1, pan: 0.7])
 (freq: 440, amp: 0.1, pan: 0.7).play;
 
-// No usar send o load con los SynthDefs; usar .add o .store en su lugar
-// Para enviar sólo los valores relevantes al nuevo Synth, el Event necesita saber qué controles existen en el SynthDef. Esto se logra por medio de una biblioteca de descriptores para SynthDefs; el descriptor es un SynthDesc, y la biblioteca es un SynthDescLib.
+// No usar .send o .load con los SynthDefs; usar .add o .store en su lugar:
+
+// Para enviar sólo los valores relevantes al nuevo Synth, el Event necesita saber qué controles existen en el SynthDef. Esto se logra por medio de una biblioteca de descriptores de  SynthDefs; el descriptor es un SynthDesc, y la biblioteca es un SynthDescLib.
 
 // Los métodos .send, .load para comunicar un SynthDef al server no actualizan esta biblioteca, por lo tanto estos sintes no funcionarán con Pbind.
 
 // Save into the library, write a .scsyndef file, and load it on the server
 SynthDef(...).store;
 
+// Para persistencia de scyndefs, mirar
+SynthDesc
+
 // Save into the library and send the SynthDef to the server (no .scsyndef file)
 // Make sure the server is booted before doing this
 SynthDef(...).add;
-
 
 // Eventos con Rest
 // Los rests pueden darse en cualquier par key-value
 // Un rest tiene una duración, ej Rest(0.5), si se usa en un stream de duración (\dur o \delta)
 
 // La técnica "touches bloquées" de Ligeti puede escribirse de esta forma:
+//"https://en.wikipedia.org/wiki/%C3%89tudes_(Ligeti)"
+// "https://www.youtube.com/watch?v=f9hLauEdjC4"
 
 (
 // first, pitches ascending by 1-3 semitones, until 2 octaves are reached
