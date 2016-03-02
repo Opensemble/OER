@@ -3,14 +3,13 @@
 
 // 43. MIDI
 // Los ejemplos asumen alguna familiaridad con el protocolo y dispositivos MIDI
-// See the Using MIDI helpfile for practical considerations and techniques for using MIDI in SC.
+// Mirar el archivo de ayuda Using MIDI para consideraciones prácticas para usar MIDI en SC.
 Using MIDI
 
 // Una forma rápida de contectar con todos los dispositivos disponibles SC
 MIDIIn.connectAll;
 
-//NOTE: For general programming, users should not use the MIDIIn class directly. See the MIDIFunc and MIDIdef classes for higher level event matching and more flexible handling of event handlers.
-//Certain MIDI messages are supported only through MIDIIn. These are: sysex, sysrt, smpte.
+// NOTA: En general, los usuarios no deberían usar la clase MIDIIn directamente. Estudiar las clases MIDIFunc y MIDIdef para matching de eventos de alto nivel y mayor flexibilidad de handlers de eventos. Algunos mensajes MIDI sólo son soportados a través de MIDIIn. Estos son: sysex, sysrt, smpte.
 
 // Forma rápida de ver todos los mensajes MIDI entrantes
 MIDIFunc.trace(true);
@@ -78,21 +77,19 @@ MIDIdef.noteOff(\myKeyUp, {arg vel, note;
 });
 )
 
-// Asegurar las conexiones MIDI (MIDIIn.connectAll)
-
 // quick2 usa una envolvente ADSR y gate es responsable por abrir y cerrar la envolvente.
 // noteArray almacena las notas en ejecución. Los índices se corresponden con notas midi
-// Cada vez que se presiona una tecla del teclado, se crea un nodo en el server y una referencia en el array
-// cuando la tecla se suelta, se envía un mensaje al sinte apropiado
-s.plotTree
+
+// Cada vez que se presiona una tecla del teclado, se crea un nodo en el server y una referencia en el array, cuando la tecla se suelta, se envía un mensaje al sinte apropiado
+//s.plotTree
 
 // Sólo vimos como como leer midi desde SC. Para enviar midi desde SC mirar la ayuda de la clase:
 MIDIOut
 
-// Unlike MIDIIn, with MIDIOut you create an instance of the MIDIOut class with a port and uid. You can have multiple MIDIOut objects to send MIDI to different physical devices. (Many users have reported timing issues with MIDIOut).
+// A diferencia de MIDIIn, con MIDIOut creamos una instancia de la clase MIDIOut con un puerto y un uid. Podemos tener múltiples objetos MIDIOut para enviar MIDI a diferentes dispositivos físicos. Se han reportado problemas de timing con MIDIOut.
 
 //Ejemplo con Pattern
-MIDIClient.init;    // if not already done
+MIDIClient.init;
 
 (
 // tu dispositivo
@@ -156,6 +153,4 @@ OSCdef(
 	path: '/cc/34'
 )
 )
-
-
 
